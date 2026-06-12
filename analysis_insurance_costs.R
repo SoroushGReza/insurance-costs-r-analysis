@@ -535,3 +535,62 @@ dev.off()
 # Jag kommer använda resultatet från summary(model_1) i rapporten för att
 # diskutera vilka variabler som verkar viktigast och vilka begränsningar
 # modellen har.
+
+# ------------------------------------------------------------
+# 8. Sammanfattande slutsatser
+# ------------------------------------------------------------
+
+# I den här analysen har jag först undersökt datasetets struktur, saknade
+# värden och kategoriska variabler. Därefter städade jag datat genom att
+# hantera saknade värden, rätta till textvärden och skapa nya variabler.
+
+# Den beskrivande analysen visade att försäkringskostnaderna varierar mycket
+# mellan olika kunder. Vissa kunder har betydligt högre kostnader än andra.
+# Detta syntes särskilt i histogrammet över charges.
+
+# Utifrån tabeller och figurer verkar rökning, kronisk sjukdom, BMI,
+# ålder, försäkringsplan och tidigare historik vara intressanta faktorer
+# att undersöka vidare.
+
+# Regressionsmodellen användes för att undersöka flera variabler samtidigt.
+# Resultatet från modellen visar vilka faktorer som har tydligast samband
+# med charges när andra variabler också ingår i modellen.
+
+# De faktorer som verkar vara särskilt viktiga att diskutera i rapporten är:
+# - rökning
+# - kronisk sjukdom
+# - ålder
+# - BMI
+# - försäkringsplan
+# - tidigare olyckor och tidigare claims
+
+# Modellen kan användas som ett stöd för att förstå vilka faktorer som hänger
+# ihop med högre försäkringskostnader. Däremot bör modellen inte ses som en
+# perfekt förutsägelsemodell. Den bygger på historiska data och fångar inte
+# alla faktorer som kan påverka en kunds framtida kostnader.
+
+# Begränsningar:
+# - Modellen är linjär och kan missa mer komplicerade samband.
+# - Det kan finnas andra viktiga variabler som inte finns med i datasetet.
+# - Vissa saknade värden behövde ersättas, vilket kan påverka resultatet.
+# - Modellen visar samband, men bevisar inte automatiskt orsakssamband.
+
+# ------------------------------------------------------------
+# 9. Självreflektion
+# ------------------------------------------------------------
+
+# Jag tycker att jag gjorde bra ifrån mig genom att arbeta steg för steg:
+# först dataförståelse, sedan datastädning, beskrivande analys och till sist
+# regressionsanalys. Jag har också försökt kommentera koden så att det går
+# att följa hur analysen är gjord.
+
+# Det svåraste var att tolka regressionsmodellen och förstå hur de olika
+# variablerna påverkar charges när de ingår i samma modell.
+
+# Jag tycker att inlämningen motsvarar G, eftersom jag har uppfyllt kraven
+# på att läsa in data, undersöka och städa datasetet, skapa relevanta nya
+# variabler, göra tabeller och figurer samt bygga och tolka en regressionsmodell.
+
+# Jag tycker också att arbetet kan närma sig VG-nivå om rapporten tydligt
+# diskuterar resultat, modellens begränsningar och varför valda variabler är
+# relevanta för analysen.
