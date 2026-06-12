@@ -152,7 +152,8 @@ insurance_clean$bmi_category <- cut(
 )
 
 # Jag skapar också en enkel historikvariabel genom att lägga ihop tidigare
-# olyckor och tidigare claims. Det kan vara relevant eftersom tidigare
+# olyckor och tidigare claims. 
+# Det kan vara relevant eftersom tidigare
 # historik kan hänga ihop med högre försäkringskostnader.
 
 insurance_clean$history_score <- insurance_clean$prior_accidents + insurance_clean$prior_claims
@@ -173,7 +174,8 @@ table(insurance_clean$history_group)
 
 # Tolkning:
 # De nya variablerna gör det lättare att jämföra grupper i den beskrivande
-# analysen. De är inte nödvändiga för alla modeller, men de hjälper mig att
+# analysen. 
+# De är inte nödvändiga för alla modeller, men de hjälper mig att
 # förstå datat bättre.
 
 # ------------------------------------------------------------
@@ -227,8 +229,8 @@ dev.off()
 
 # Tolkning:
 # Figuren visar att många kunder har lägre eller medelhöga kostnader,
-# medan färre kunder har mycket höga kostnader. Det tyder på att charges
-# inte är helt jämnt fördelad.
+# medan färre kunder har mycket höga kostnader. 
+# Det tyder på att charges inte är helt jämnt fördelad.
 
 # ------------------------------------------------------------
 # 6.3 Tabell 1: Charges efter rökning
@@ -266,6 +268,8 @@ boxplot(
   col = "lightgreen"
 )
 
+dev.off()
+
 # Tolkning:
 # Boxploten gör det lättare att se skillnader mellan grupperna.
 # Om gruppen rökare ligger högre än icke-rökare tyder det på att rökning
@@ -289,7 +293,8 @@ chronic_table
 
 # Tolkning:
 # Tabellen visar om kunder med kronisk sjukdom har högre kostnader än kunder
-# utan kronisk sjukdom. Detta är relevant eftersom hälsorelaterade faktorer
+# utan kronisk sjukdom. 
+# Detta är relevant eftersom hälsorelaterade faktorer
 # kan påverka försäkringskostnader.
 
 # ------------------------------------------------------------
@@ -309,16 +314,6 @@ plot(
 )
 
 dev.off()
-
-plot(
-  insurance_clean$bmi,
-  insurance_clean$charges,
-  main = "Samband mellan BMI och försäkringskostnader",
-  xlab = "BMI",
-  ylab = "Charges",
-  pch = 19,
-  col = "darkgray"
-)
 
 # Tolkning:
 # Figuren visar om det finns ett samband mellan BMI och försäkringskostnader.
@@ -343,7 +338,8 @@ plan_table
 
 # Tolkning:
 # Tabellen visar om försäkringskostnaderna skiljer sig mellan olika
-# försäkringsplaner. Det är rimligt att plan_type undersöks eftersom olika
+# försäkringsplaner. 
+# Det är rimligt att plan_type undersöks eftersom olika
 # planer kan vara kopplade till olika nivåer av kostnad.
 
 # ------------------------------------------------------------
@@ -362,15 +358,6 @@ boxplot(
 )
 
 dev.off()
-
-boxplot(
-  charges ~ age_group,
-  data = insurance_clean,
-  main = "Försäkringskostnader efter åldersgrupp",
-  xlab = "Åldersgrupp",
-  ylab = "Charges",
-  col = "lightyellow"
-)
 
 # Tolkning:
 # Figuren visar om försäkringskostnaderna skiljer sig mellan åldersgrupper.
