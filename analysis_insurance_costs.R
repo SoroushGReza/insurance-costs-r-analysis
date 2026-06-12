@@ -116,8 +116,15 @@ insurance_clean$sex <- as.factor(insurance_clean$sex)
 insurance_clean$region <- as.factor(insurance_clean$region)
 insurance_clean$smoker <- as.factor(insurance_clean$smoker)
 insurance_clean$chronic_condition <- as.factor(insurance_clean$chronic_condition)
-insurance_clean$exercise_level <- as.factor(insurance_clean$exercise_level)
-insurance_clean$plan_type <- as.factor(insurance_clean$plan_type)
+insurance_clean$exercise_level <- factor(
+  insurance_clean$exercise_level,
+  levels = c("high", "medium", "low", "unknown")
+)
+
+insurance_clean$plan_type <- factor(
+  insurance_clean$plan_type,
+  levels = c("basic", "standard", "premium")
+)
 
 # Kontrollera strukturen efter städning
 str(insurance_clean)
@@ -218,16 +225,6 @@ hist(
 
 dev.off()
 
-# Visa figuren även i RStudio
-hist(
-  insurance_clean$charges,
-  main = "Fördelning av försäkringskostnader",
-  xlab = "Charges",
-  ylab = "Antal kunder",
-  col = "lightblue",
-  border = "white"
-)
-
 # Tolkning:
 # Figuren visar att många kunder har lägre eller medelhöga kostnader,
 # medan färre kunder har mycket höga kostnader. Det tyder på att charges
@@ -259,17 +256,6 @@ smoker_table
 # ------------------------------------------------------------
 
 png("figures/figure2_charges_by_smoker.png")
-
-boxplot(
-  charges ~ smoker,
-  data = insurance_clean,
-  main = "Försäkringskostnader efter rökning",
-  xlab = "Rökare",
-  ylab = "Charges",
-  col = "lightgreen"
-)
-
-dev.off()
 
 boxplot(
   charges ~ smoker,
@@ -413,3 +399,139 @@ round(correlations, 3)
 # Korrelationerna visar enkla samband mellan numeriska variabler och charges.
 # Detta är inte samma sak som regression, men det hjälper mig att välja
 # vilka variabler som verkar intressanta att undersöka vidare.
+
+# ------------------------------------------------------------
+# 7. Regressionsanalys
+# ------------------------------------------------------------
+
+# I den här delen bygger jag en regressionsmodell där chargess är målvariable.
+# Jag använder multipel linjär regression eftersom jag vill undersöka flera
+# faktorer samtiddigt.
+
+# Jag väljer prediktorer som verkar rimliga utifrån uppgiften och den
+# beskrivande analysen:
+# - age: äldre kunder kan ha högre kostnader
+# - bmi: högre BMI kan hänga ihop med högre kostnader
+# - smoker: rökning verkar ha tydligt samband med charges
+# - chronic_condition: kronisk sjukdom kan påverka kostnader
+# - exercise_level: motionsnivå kan vara kopplad till hälsa och risk
+# - plan_type: olika försäkringsplaner kan ha olika kostnadsnivåer
+# - prior_accidents och prior_claims: tidigare historik kan påverka kostnader
+
+model_1 <- lm(
+  charges ~ age + bmi + smoker + chronic_condition + exercise_level +
+    plan_type + prior_accidents + prior_claims,
+  data = insurance_clean
+)
+
+# Visa resultattet från regressionsmodellen
+summary(model_1)
+
+# Tolkning:
+# I summary(model_1) tittar jag framför allt på koefficienter, p-värden
+# och R-squared.
+#
+# Koefficienterna visar hur mycket charges förväntas ändras när en variabel
+# ökar eller när en kategori jämförs med referenskategorin.
+#
+# P-värden används för att se vilka variabler som verkar ha ett tydligt
+# samband med charges i modellen.
+#
+# R-squared visar hur stor del av variationen i charges som modellen
+# förklarar.
+
+# ------------------------------------------------------------
+# 7.1 Spara viktiga modellmått
+# ------------------------------------------------------------
+
+model_summary <- summary(model_1)
+
+r_squared <- model_summary$r.squared
+adjusted_r_squared <- model_summary$adj.r.squared
+
+r_squared
+adjusted_r_squared
+
+# Tolkning:
+# R-squared visar modellens förklaringsgrad. Adjusted R-squared är också
+# viktig eftersom den tar hänsyn till att modellen har flera prediktorer.
+
+# ------------------------------------------------------------
+# 7.2 Konfidensintervall för modellen
+# ------------------------------------------------------------
+
+confint(model_1)
+
+# Tolkning:
+# Konfidensintervallen visar osäkerheten runt koefficienterna.
+# Om ett intervall inte innehåller 0 kan det tyda på att variabeln har ett
+# tydligare samband med charges.
+
+# ------------------------------------------------------------
+# 7.3 Modellgranskning med residualer
+# ------------------------------------------------------------
+
+# Jag granskar modellen med hjälp av residualplottar.
+# Detta gör jag för att se om modellen verkar rimlig och om det finns
+# mönster som modellen inte fångar.
+
+png("figures/figure5_model_diagnostics.png", width = 1200, height = 900)
+
+par(mfrow = c(2, 2), mar = c(4, 4, 3, 2))
+plot(model_1)
+
+dev.off()
+
+par(mfrow = c(1, 1))
+
+# Tolkning:
+# Residualplottarna används för att bedöma om modellen fungerar rimligt.
+# Om residualerna visar tydliga mönster kan det betyda att modellen inte
+# fångar alla samband i datat. Detta är en begränsning med modellen.
+
+# ------------------------------------------------------------
+# 7.4 Enkel jämförelse mellan verkliga och förutsagda värden
+# ------------------------------------------------------------
+
+insurance_clean$predicted_charges <- predict(model_1, newdata = insurance_clean)
+
+head(insurance_clean[, c("charges", "predicted_charges")])
+
+# Jag tar bort rader där predicted_charges saknas, så att figuren kan skapas.
+prediction_data <- insurance_clean[!is.na(insurance_clean$predicted_charges), ]
+
+# Jag skapar en figur som jämför verkliga charges med modellens förutsagda
+# värden.
+
+png("figures/figure6_actual_vs_predicted.png")
+
+plot(
+  prediction_data$charges,
+  prediction_data$predicted_charges,
+  main = "Verkliga och förutsagda försäkringskostnader",
+  xlab = "Verkliga charges",
+  ylab = "Förutsagda charges",
+  pch = 19,
+  col = "darkgray"
+)
+
+abline(0, 1, col = "red", lwd = 2)
+
+dev.off()
+
+
+# Tolkning:
+# Om punkterna ligger nära den röda linjen betyder det att modellen gör
+# ganska bra förutsägelser. Om punkterna ligger långt från linjen betyder
+# det att modellen har svårt att förutsäga vissa kunders kostnader.
+
+# ------------------------------------------------------------
+# 7.5 Slutsats från regressionsmodellen
+# ------------------------------------------------------------
+
+# Regressionsmodellen hjälper mig att undersöka vilka variabler som verkar
+# ha tydligast samband med charges när flera faktorer kontrolleras samtidigt.
+#
+# Jag kommer använda resultatet från summary(model_1) i rapporten för att
+# diskutera vilka variabler som verkar viktigast och vilka begränsningar
+# modellen har.
